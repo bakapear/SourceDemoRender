@@ -48,6 +48,11 @@ s32 LauncherState::start_game(LauncherGame* game, std::string launch_options)
     // We don't have to wait here since we don't print to the launcher console from the game anymore.
     WaitForSingleObject(info.hProcess, INFINITE);
 
+    DWORD exit; 
+    GetExitCodeProcess(info.hProcess, &exit);
+
+    launcher_log("EXIT %i\n", exit);
+
     CloseHandle(info.hProcess);
 
     return 0;
