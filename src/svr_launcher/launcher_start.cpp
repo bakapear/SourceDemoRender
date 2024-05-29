@@ -3,7 +3,7 @@
 // Base arguments that every game will have.
 const char* BASE_GAME_ARGS = "-steam -insecure +sv_lan 1 -console -novid";
 
-s32 LauncherState::start_game(LauncherGame* game)
+s32 LauncherState::start_game(LauncherGame* game, std::string launch_options)
 {
     // We don't need the game directory necessarily (mods work differently) since we apply the -game parameter.
     // All known Source games will use SetCurrentDirectory to the mod (game) directory anyway.
@@ -14,10 +14,8 @@ s32 LauncherState::start_game(LauncherGame* game)
     StringCchCatA(full_args, SVR_ARRAY_SIZE(full_args), BASE_GAME_ARGS); // Always add base args.
 
     // Add other args from game too.
-    if (game->args)
-    {
-        StringCchCatA(full_args, SVR_ARRAY_SIZE(full_args), svr_va(" %s", game->args));
-    }
+    if (!launch_options.empty()) StringCchCatA(full_args, SVR_ARRAY_SIZE(full_args), launch_options.c_str());
+    else if (game->args) StringCchCatA(full_args, SVR_ARRAY_SIZE(full_args), svr_va(" %s", game->args));
 
     launcher_log("Starting %s (%s). If launching doesn't work then make sure any antivirus is disabled\n", game->display_name, game->file_name);
 
@@ -55,7 +53,7 @@ s32 LauncherState::start_game(LauncherGame* game)
     return 0;
 }
 
-s32 LauncherState::autostart_game(const char* id)
+s32 LauncherState::autostart_game(const char* id, std::string launch_options)
 {
     LauncherGame* found_game = NULL;
 
@@ -75,7 +73,7 @@ s32 LauncherState::autostart_game(const char* id)
         launcher_error("Cannot autostart, no game with id %s was found.", id);
     }
 
-    return start_game(found_game);
+    return start_game(found_game, launch_options);
 }
 
 // Load and parse all games.
@@ -266,7 +264,7 @@ s32 LauncherState::show_start_menu()
     }
 
     LauncherGame* game = &game_list[selection];
-    return start_game(game);
+    return start_game(game, "");
 }
 
 bool LauncherState::exe_is_right_arch(const char* path)

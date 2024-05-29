@@ -21,10 +21,16 @@ int main(int argc, char** argv)
     launcher_state.init();
 
     // Autostarting a game works by giving the id.
-    if (argc == 2)
+    if (argc >= 2)
     {
         const char* id = argv[1];
-        return launcher_state.autostart_game(id);
+
+        std::string launch_options = GetCommandLineA();
+        char* arg = argv[1];
+        if (argc >= 3) launch_options = launch_options.substr(launch_options.find(arg) + strlen(arg));
+        else launch_options = "";
+
+        return launcher_state.autostart_game(id, launch_options);
     }
 
     return launcher_state.show_start_menu();
