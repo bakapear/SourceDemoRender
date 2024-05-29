@@ -48,7 +48,7 @@ s32 LauncherState::start_game(LauncherGame* game)
     CloseHandle(info.hThread);
 
     // We don't have to wait here since we don't print to the launcher console from the game anymore.
-    // WaitForSingleObject(info.hProcess, INFINITE);
+    WaitForSingleObject(info.hProcess, INFINITE);
 
     CloseHandle(info.hProcess);
 
