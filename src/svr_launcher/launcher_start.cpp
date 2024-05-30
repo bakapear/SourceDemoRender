@@ -1,10 +1,46 @@
 #include "launcher_priv.h"
 
+#include <fstream>
+#include <thread>
+
+bool file_watcher = true;
+
+// Ugly solution to getting the log from the game to the launcher console.
+void watch_log(const char* fileName)
+{
+    std::string log, logFile(fileName);
+    std::streamoff p = 0;
+    std::ifstream ifs(logFile.c_str());
+
+    bool firstPass = true;
+
+    while (true)
+    {
+        if (!file_watcher) break;
+        ifs.seekg(p);
+        while (getline(ifs, log))
+        {
+            if (!firstPass)
+            {
+                if (log.rfind("Hello from", 0) == 0) printf("HELLO\n");
+                else if (log.rfind("Init for", 0) == 0) printf("INIT\n");
+            }
+            if (ifs.tellg() == -1) p = p + log.size();
+            else p = ifs.tellg();
+        }
+        ifs.clear();
+        firstPass = false;
+    }
+}
+
 // Base arguments that every game will have.
 const char* BASE_GAME_ARGS = "-steam -insecure +sv_lan 1 -console -novid";
 
 s32 LauncherState::start_game(LauncherGame* game, std::string launch_options)
 {
+    char log_path[MAX_PATH];
+    SVR_SNPRINTF(log_path, "%s\\data\\SVR_LOG.txt", working_dir);
+
     // We don't need the game directory necessarily (mods work differently) since we apply the -game parameter.
     // All known Source games will use SetCurrentDirectory to the mod (game) directory anyway.
 
@@ -17,7 +53,7 @@ s32 LauncherState::start_game(LauncherGame* game, std::string launch_options)
     if (!launch_options.empty()) StringCchCatA(full_args, SVR_ARRAY_SIZE(full_args), launch_options.c_str());
     else if (game->args) StringCchCatA(full_args, SVR_ARRAY_SIZE(full_args), svr_va(" %s", game->args));
 
-    launcher_log("Starting %s (%s). If launching doesn't work then make sure any antivirus is disabled\n", game->display_name, game->file_name);
+    printf("START %s\n", game->display_name);
 
     STARTUPINFOA start_info = {};
     start_info.cb = sizeof(STARTUPINFOA);
@@ -45,8 +81,15 @@ s32 LauncherState::start_game(LauncherGame* game, std::string launch_options)
 
     CloseHandle(info.hThread);
 
-    // We don't have to wait here since we don't print to the launcher console from the game anymore.
-    WaitForSingleObject(info.hProcess, INFINITE);
+    // Transfer file log to launcher.
+    std::thread t1(watch_log, log_path);
+
+    // We DO have to wait here since we DO print to the launcher console from the game.
+    std::thread t2(WaitForSingleObject, info.hProcess, INFINITE);
+    t2.join();
+
+    file_watcher = false;
+    t1.join();
 
     DWORD exit; 
     GetExitCodeProcess(info.hProcess, &exit);
