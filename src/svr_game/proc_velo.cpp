@@ -1,4 +1,5 @@
 #include "proc_priv.h"
+#include <fstream>
 
 bool ProcState::velo_init()
 {
@@ -114,6 +115,13 @@ bool ProcState::velo_start()
     bool ret = false;
     HRESULT hr;
 
+    if (movie_profile.velo_enabled == 1 && movie_profile.velo_output != NULL)
+    {
+        velo_file.open(movie_profile.velo_output);
+        velo_file.close();
+        velo_file.open(movie_profile.velo_output, std::ios_base::app);
+    }
+
     if (!velo_create_font_face())
     {
         goto rfail;
@@ -136,6 +144,7 @@ rexit:
 
 void ProcState::velo_end()
 {
+    if (velo_file.is_open()) velo_file.close();
 }
 
 void ProcState::velo_draw()

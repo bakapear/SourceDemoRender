@@ -1,5 +1,8 @@
 #pragma once
 
+#include <iostream>
+#include <fstream>
+
 // Texture that comes directly from the game.
 // This is read only and is managed by svr_api.
 struct ProcGameTexture
@@ -46,6 +49,7 @@ struct MovieProfile
 
     // Velo options:
     s32 velo_enabled;
+    char* velo_output;
     char* velo_font; // Allocated.
     s32 velo_font_size;
     SvrVec4I velo_font_color;
@@ -123,6 +127,7 @@ struct ProcState
     UINT16 velo_number_glyph_idxs[10]; // Glyph indexes for all numbers so we don't have to look that up every time.
 
     SvrVec3 velo_vector;
+    std::ofstream velo_file;
 
     bool velo_init();
     void velo_free_static();

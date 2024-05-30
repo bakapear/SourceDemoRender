@@ -146,6 +146,7 @@ bool ProcState::movie_load_profile(const char* name, bool required)
     ret &= OPT_FLOAT(ini_root, "motion_blur_exposure", 0.0f, 1.0f, &movie_profile.mosample_exposure);
 
     ret &= OPT_BOOL(ini_root, "velo_enabled", &movie_profile.velo_enabled);
+    OPT_STR(ini_root, "velo_output", &movie_profile.velo_output);
     ret &= OPT_STR(ini_root, "velo_font", &movie_profile.velo_font);
     ret &= OPT_S32(ini_root, "velo_font_size", 16, 192, &movie_profile.velo_font_size);
     ret &= OPT_COLOR(ini_root, "velo_color", &movie_profile.velo_font_color);

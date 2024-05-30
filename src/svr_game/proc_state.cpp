@@ -2,9 +2,31 @@
 
 #include <string>
 
+int* demo_tick_ptr;
+
+void* game_get_pointer(const char* dll, uintptr_t address)
+{
+    MODULEINFO info;
+
+    if (!GetModuleInformation(GetCurrentProcess(), GetModuleHandleA(dll), &info, sizeof(MODULEINFO)))
+    {
+        // Module is not loaded. Not an error because we allow fallthrough scanning of multiple patterns.
+        return NULL;
+    }
+
+    uintptr_t baseAddress = reinterpret_cast<uintptr_t>(info.lpBaseOfDll);
+    uintptr_t targetAddress = baseAddress + address;
+
+    assert(targetAddress >= baseAddress && targetAddress < (baseAddress + info.SizeOfImage));
+
+    return reinterpret_cast<void*>(targetAddress);
+}
+
 bool ProcState::init(const char* in_resource_path, ID3D11Device* in_d3d11_device)
 {
     bool ret = false;
+
+    if(demo_tick_ptr == NULL) demo_tick_ptr = (int*)game_get_pointer("engine.dll", 0x4621A4);
 
     SVR_COPY_STRING(in_resource_path, svr_resource_path);
 
@@ -77,7 +99,11 @@ void ProcState::process_finished_shared_tex()
     // Now is the time to draw the velo if we have it.
     if (movie_profile.velo_enabled)
     {
-        velo_draw();
+        if (movie_profile.velo_output == NULL) velo_draw();
+        else
+        {
+            velo_file << svr_va("%i %.2f %.2f %.2f\n", *demo_tick_ptr, velo_vector.x, velo_vector.y, velo_vector.z);
+        }
     }
 
     encoder_send_shared_tex();
