@@ -131,7 +131,7 @@ bool ProcState::movie_load_profile(const char* name, bool required)
 
     ret = true;
 
-    OPT_STR(ini_root, "movie_output", &movie_profile.movie_output);
+    OPT_STR(ini_root, "video_output", &movie_profile.video_output);
     ret &= OPT_S32(ini_root, "video_fps", 1, 1000, &movie_profile.video_fps);
     ret &= OPT_STR_LIST(ini_root, "video_encoder", VIDEO_ENCODER_TABLE, &movie_profile.video_encoder);
     ret &= OPT_S32(ini_root, "video_x264_crf", 0, 52, &movie_profile.video_x264_crf);

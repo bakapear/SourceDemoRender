@@ -150,9 +150,9 @@ bool ProcState::start(const char* dest_file, const char* profile, ProcGameTextur
     }
 
     // Override movie path if specified in config file.
-    if (movie_profile.movie_output != NULL) 
+    if (movie_profile.video_output != NULL) 
     {
-        char* output = movie_profile.movie_output;
+        char* output = movie_profile.video_output;
 
         if (!PathIsRelativeA(output))
         {

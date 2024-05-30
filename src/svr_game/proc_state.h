@@ -31,7 +31,7 @@ enum /* ProcVeloLength */
 
 struct MovieProfile
 {
-    char* movie_output;
+    char* video_output;
     // Movie options:
     const char* video_encoder;
     const char* video_x264_preset;
