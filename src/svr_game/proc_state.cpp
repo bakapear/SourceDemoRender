@@ -1,5 +1,7 @@
 #include "proc_priv.h"
 
+#include <string>
+
 bool ProcState::init(const char* in_resource_path, ID3D11Device* in_d3d11_device)
 {
     bool ret = false;
@@ -81,6 +83,12 @@ void ProcState::process_finished_shared_tex()
     encoder_send_shared_tex();
 }
 
+inline bool ends_with(std::string const& value, std::string const& ending)
+{
+    if (ending.size() > value.size()) return false;
+    return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
 bool ProcState::start(const char* dest_file, const char* profile, ProcGameTexture* game_texture, SvrAudioParams* audio_params)
 {
     bool ret = false;
@@ -114,6 +122,25 @@ bool ProcState::start(const char* dest_file, const char* profile, ProcGameTextur
             }
         }
     }
+
+    // Override movie path if specified in config file.
+    if (movie_profile.movie_output != NULL) 
+    {
+        char* output = movie_profile.movie_output;
+
+        if (!PathIsRelativeA(output))
+        {
+            StringCchCopyA(movie_path, MAX_PATH, output);
+
+            if (!ends_with(output, "\\") && !ends_with(output, "/"))
+            {
+                StringCchCatA(movie_path, MAX_PATH, "\\");
+            }
+
+            StringCchCatA(movie_path, MAX_PATH, dest_file);
+        }
+    }
+
 
     if (!vid_start())
     {
