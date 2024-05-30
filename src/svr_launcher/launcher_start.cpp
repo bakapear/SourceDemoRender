@@ -22,8 +22,8 @@ void watch_log(const char* fileName)
         {
             if (!firstPass)
             {
-                if (log.rfind("Hello from", 0) == 0) printf("HELLO\n");
-                else if (log.rfind("Init for", 0) == 0) printf("INIT\n");
+                if (log.rfind("Hello from", 0) == 0) fprintf(stderr, "HELLO\n");
+                else if (log.rfind("Init for", 0) == 0) fprintf(stderr, "INIT\n");
             }
             if (ifs.tellg() == -1) p = p + log.size();
             else p = ifs.tellg();
@@ -53,7 +53,7 @@ s32 LauncherState::start_game(LauncherGame* game, std::string launch_options)
     if (!launch_options.empty()) StringCchCatA(full_args, SVR_ARRAY_SIZE(full_args), launch_options.c_str());
     else if (game->args) StringCchCatA(full_args, SVR_ARRAY_SIZE(full_args), svr_va(" %s", game->args));
 
-    printf("START %s\n", game->display_name);
+    fprintf(stderr, "START %s\n", game->display_name);
 
     STARTUPINFOA start_info = {};
     start_info.cb = sizeof(STARTUPINFOA);
@@ -94,7 +94,7 @@ s32 LauncherState::start_game(LauncherGame* game, std::string launch_options)
     DWORD exit; 
     GetExitCodeProcess(info.hProcess, &exit);
 
-    launcher_log("EXIT %i\n", exit);
+    fprintf(stderr, "EXIT %i\n", exit);
 
     CloseHandle(info.hProcess);
 
