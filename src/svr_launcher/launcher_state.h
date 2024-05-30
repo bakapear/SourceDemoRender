@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 struct LauncherGame
 {
     char* file_name; // File name of ini.
@@ -24,8 +26,8 @@ struct LauncherState
     void launcher_log(const char* format, ...);
     __declspec(noreturn) void launcher_error(const char* format, ...);
     s32 get_choice_from_user(s32 min, s32 max);
-    s32 start_game(LauncherGame* game);
-    s32 autostart_game(const char* id);
+    s32 start_game(LauncherGame* game, std::string launcher_options);
+    s32 autostart_game(const char* id, std::string launcher_options);
     void load_games();
     bool parse_game(const char* file, LauncherGame* dest);
     void free_game(LauncherGame* game);

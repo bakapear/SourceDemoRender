@@ -2,7 +2,13 @@
 
 void LauncherState::init()
 {
-    GetCurrentDirectoryA(MAX_PATH, working_dir);
+    // GetCurrentDirectoryA(MAX_PATH, working_dir);
+
+    // Use directory of launcher exe instead, so we can launch it from any location.
+    GetModuleFileNameA(NULL, working_dir, MAX_PATH); 
+    std::string d = std::string(working_dir);
+    d = d.substr(0, d.find_last_of("\\/"));
+    strcpy(working_dir, d.c_str());
 
     // Enable to show system information and stuff on start.
 #if 1
