@@ -2,9 +2,9 @@
 
 #include <string>
 
-int* demo_tick_ptr;
+int *demo_tick_ptr;
 
-void* game_get_pointer(const char* dll, uintptr_t address)
+void *game_get_pointer(const char *dll, uintptr_t address)
 {
     MODULEINFO info;
 
@@ -19,14 +19,15 @@ void* game_get_pointer(const char* dll, uintptr_t address)
 
     assert(targetAddress >= baseAddress && targetAddress < (baseAddress + info.SizeOfImage));
 
-    return reinterpret_cast<void*>(targetAddress);
+    return reinterpret_cast<void *>(targetAddress);
 }
 
-bool ProcState::init(const char* in_resource_path, ID3D11Device* in_d3d11_device)
+bool ProcState::init(const char *in_resource_path, ID3D11Device *in_d3d11_device)
 {
     bool ret = false;
 
-    if(demo_tick_ptr == NULL) demo_tick_ptr = (int*)game_get_pointer("engine.dll", 0x4621A4);
+    if (demo_tick_ptr == NULL)
+        demo_tick_ptr = (int *)game_get_pointer("engine.dll", 0x4661A4);
 
     SVR_COPY_STRING(in_resource_path, svr_resource_path);
 
@@ -78,7 +79,7 @@ void ProcState::new_video_frame()
     }
 }
 
-void ProcState::new_audio_samples(SvrWaveSample* samples, s32 num_samples)
+void ProcState::new_audio_samples(SvrWaveSample *samples, s32 num_samples)
 {
     encoder_send_audio_samples(samples, num_samples);
 }
@@ -99,7 +100,8 @@ void ProcState::process_finished_shared_tex()
     // Now is the time to draw the velo if we have it.
     if (movie_profile.velo_enabled)
     {
-        if (movie_profile.velo_output == NULL) velo_draw();
+        if (movie_profile.velo_output == NULL)
+            velo_draw();
         else
         {
             velo_file << svr_va("%i %.2f %.2f %.2f\n", *demo_tick_ptr, velo_vector.x, velo_vector.y, velo_vector.z);
@@ -109,13 +111,14 @@ void ProcState::process_finished_shared_tex()
     encoder_send_shared_tex();
 }
 
-inline bool ends_with(std::string const& value, std::string const& ending)
+inline bool ends_with(std::string const &value, std::string const &ending)
 {
-    if (ending.size() > value.size()) return false;
+    if (ending.size() > value.size())
+        return false;
     return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-bool ProcState::start(const char* dest_file, const char* profile, ProcGameTexture* game_texture, SvrAudioParams* audio_params)
+bool ProcState::start(const char *dest_file, const char *profile, ProcGameTexture *game_texture, SvrAudioParams *audio_params)
 {
     bool ret = false;
 
@@ -150,9 +153,9 @@ bool ProcState::start(const char* dest_file, const char* profile, ProcGameTextur
     }
 
     // Override movie path if specified in config file.
-    if (movie_profile.video_output != NULL) 
+    if (movie_profile.video_output != NULL)
     {
-        char* output = movie_profile.video_output;
+        char *output = movie_profile.video_output;
 
         if (!PathIsRelativeA(output))
         {
@@ -166,7 +169,6 @@ bool ProcState::start(const char* dest_file, const char* profile, ProcGameTextur
             StringCchCatA(movie_path, MAX_PATH, dest_file);
         }
     }
-
 
     if (!vid_start())
     {
