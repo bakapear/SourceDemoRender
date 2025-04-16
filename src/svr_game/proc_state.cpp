@@ -3,6 +3,7 @@
 #include <string>
 
 int *demo_tick_ptr;
+uintptr_t velo_ptr;
 
 void *game_get_pointer(const char *dll, uintptr_t address)
 {
@@ -27,7 +28,10 @@ bool ProcState::init(const char *in_resource_path, ID3D11Device *in_d3d11_device
     bool ret = false;
 
     if (demo_tick_ptr == NULL)
-        demo_tick_ptr = (int *)game_get_pointer("engine.dll", 0x4661A4);
+        demo_tick_ptr = (int *)game_get_pointer("engine.dll", 0x4611A4);
+
+    if (velo_ptr == NULL)
+        velo_ptr = (uintptr_t)game_get_pointer("client.dll", 0x10BB550);
 
     SVR_COPY_STRING(in_resource_path, svr_resource_path);
 
@@ -104,7 +108,8 @@ void ProcState::process_finished_shared_tex()
             velo_draw();
         else
         {
-            velo_file << svr_va("%i %.2f %.2f %.2f\n", *demo_tick_ptr, velo_vector.x, velo_vector.y, velo_vector.z);
+            float* velo = (float*)((char*)(*(void**)velo_ptr) + 0x168);
+            velo_file << svr_va("%i %.2f %.2f %.2f\n", *demo_tick_ptr, velo[0], velo[1], velo[2]);
         }
     }
 
