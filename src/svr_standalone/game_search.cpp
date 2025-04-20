@@ -477,7 +477,7 @@ GameFnProxy game_get_local_player_proxy_1()
 {
     // Find C_BasePlayer::PostDataUpdate (or search "snd_soundmixer"), find global assignment to s_pLocalPlayer.
 
-    u8* addr = (u8*)game_scan_pattern("client.dll", "48 89 05 ?? ?? ?? ?? 48 8D 15 ?? ?? ?? ?? 48 8B 01 FF 50 68 48 8B C8", NULL);
+    u8* addr = (u8*)game_scan_pattern("client.dll", "48 89 05 ?? ?? ?? ?? 48 8D 15 ?? ?? ?? ?? 48 8B 05", NULL);
 
     if (addr == NULL)
     {
