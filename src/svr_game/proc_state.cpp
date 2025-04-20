@@ -27,7 +27,7 @@ bool ProcState::init(const char *in_resource_path, ID3D11Device *in_d3d11_device
     bool ret = false;
 
     if (demo_tick_ptr == NULL)
-        demo_tick_ptr = (int *)game_get_pointer("engine.dll", 0x4661A4);
+        demo_tick_ptr = (int *)game_get_pointer("engine.dll", 0x4611A4);
 
     SVR_COPY_STRING(in_resource_path, svr_resource_path);
 
